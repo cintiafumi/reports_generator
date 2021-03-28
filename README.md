@@ -190,3 +190,162 @@ ReportsGenerator.build("report_test.csv")
 ReportsGenerator.build("report_test.csvs")
 #..> "Error while opening filelalala"
 ```
+
+## Leitura em stream
+
+Ao invés usar [File.read](https://hexdocs.pm/elixir/File.html#read/1), iremos usar o [File.stream!](https://hexdocs.pm/elixir/File.html#stream!/3).
+
+```elixir
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.stream!()
+    |> IO.inspect()
+  end
+```
+
+Somente para vermos o que o `File.stream!` está retornando no `iex`:
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> %File.Stream{
+#..>   line_or_bytes: :line,
+#..>   modes: [:raw, :read_ahead, :binary],
+#..>   path: "reports/report_test.csv",
+#..>   raw: true
+#..> }
+#..> %File.Stream{
+#..>   line_or_bytes: :line,
+#..>   modes: [:raw, :read_ahead, :binary],
+#..>   path: "reports/report_test.csv",
+#..>   raw: true
+#..> }
+```
+
+Vemos que retorna uma [struct](https://elixir-lang.org/getting-started/structs.html#structs-are-bare-maps-underneath), que nada mais é que um `Map` com um nome.
+
+O `File.Stream` não possui o conteúdo do arquivo, nele temos os metadados como:
+
+- `line_or_bytes` que é como ele vai ler o arquivo
+- `path` que é o caminho do arquivo
+
+Ele não tem o conteúdo em si do arquivo, pois é uma função com característica `laziness`, que só traz o conteúdo quando quiser utilizar.
+
+O `File.stream!` combinado com o `Enum.each` vai dar o efeito de: ler uma linha e executar uma operação. De forma que vai lendo o arquivo e executando linha a linha, sem a necessidade de carregar o conteúdo inteiro do arquivo na memória. E tem o `!` porque diferentemente do `File.read` que retorna tupla de `:ok` ou `:error` para ler o arquivo e retornar o conteúdo, no `File.stream!` só vai ler o arquivo no futuro.
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.stream!()
+    |> Enum.each(fn elem -> IO.inspect(elem) end)
+  end
+end
+```
+
+Retornando assim:
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> "1,pizza,48\n"
+#..> "2,açaí,45\n"
+#..> "3,hambúrguer,31\n"
+#..> "4,esfirra,42\n"
+#..> "5,hambúrguer,49\n"
+#..> "6,esfirra,18\n"
+#..> "7,pizza,27\n"
+#..> "8,esfirra,25\n"
+#..> "9,churrasco,24\n"
+#..> "10,churrasco,36"
+#..> :ok
+```
+
+Ou seja, para cada linha do arquivo, foi executado um `IO.inspect()`. No final da operação, o `Enum.each()` retorna um `:ok` para dizer que a operação ocorreu com sucesso.
+
+Para melhorar, vamos separar da linha `"1,pizza,48\n"` quem é `id`, `produto`, `valor` e remover `\n`.
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.stream!()
+    |> Enum.map(fn line -> parse_line(line) end)
+  end
+
+  defp parse_line(line) do
+    line
+    |> String.trim()
+    |> String.split(",")
+  end
+end
+```
+
+Ao rodar no `iex`, temos:
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> [
+#..>   ["1", "pizza", "48"],
+#..>   ["2", "açaí", "45"],
+#..>   ["3", "hambúrguer", "31"],
+#..>   ["4", "esfirra", "42"],
+#..>   ["5", "hambúrguer", "49"],
+#..>   ["6", "esfirra", "18"],
+#..>   ["7", "pizza", "27"],
+#..>   ["8", "esfirra", "25"],
+#..>   ["9", "churrasco", "24"],
+#..>   ["10", "churrasco", "36"]
+#..> ]
+```
+
+Então vemos que o primeiro elemento da lista é o `id`, o segundo é o `produto` e o terceiro é o `preço`. Mas vamos alterar o preço de string para valor
+
+```elixir
+  defp parse_line(line) do
+    line
+    |> String.trim()
+    |> String.split(",")
+    |> List.update_at(2, &String.to_integer/1)
+  end
+```
+
+Retornando o terceiro elemento como `integer`:
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> [
+#..>   ["1", "pizza", 48],
+#..>   ["2", "açaí", 45],
+#..>   ["3", "hambúrguer", 31],
+#..>   ["4", "esfirra", 42],
+#..>   ["5", "hambúrguer", 49],
+#..>   ["6", "esfirra", 18],
+#..>   ["7", "pizza", 27],
+#..>   ["8", "esfirra", 25],
+#..>   ["9", "churrasco", 24],
+#..>   ["10", "churrasco", 36]
+#..> ]
+```
+
+Ao criar uma função anônima, podemos usar a sintaxe:
+
+```elixir
+    |> Enum.map(fn line -> parse_line(line) end)
+```
+
+Ou de maneira implícita com o `&`:
+
+```elixir
+    |> Enum.map(&parse_line(&1))
+```
+
+No caso de uma função de módulo externo, a função anônima explícita seria:
+
+```elixir
+    |> List.update_at(2, fn elem -> String.to_integer(elem) end)
+```
+
+E a função implícita:
+
+```elixir
+    |> List.update_at(2, &String.to_integer/1)
+```
