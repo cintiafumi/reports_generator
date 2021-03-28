@@ -1,21 +1,75 @@
 # ReportsGenerator
 
-**TODO: Add description**
+Projeto Elixir que extrai dados de um arquivo `.csv` que corresponde a um relatório de usuários de um aplicativo de delivery, contendo os dados da quantidade e de qual alimento cada usuário consumiu.
 
-## Installation
+Os dados do arquivo será extraído, processado e avaliado conforme seu desempenho durante a execução que retornará:
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `reports_generator` to your list of dependencies in `mix.exs`:
+- qual o usuário que mais consumiu, e
+- qual o alimento mais consumido.
+
+Teremos duas formas de execução:
+
+- um arquivo contendo 300 mil linhas de dados
+- 3 arquivos contendo 100 mil linhas de dados cada
+
+## Inicialização
+
+Iniciando o projeto
+
+```bash
+mix new reports_generator
+```
+
+## Configuração de Credo
+
+Credo é um analisador sintático do código, que nos ajuda a manter a boas de escrita do nosso código. Para instalar, seguir as instruções desse [repo](https://github.com/rrrene/credo).
+
+Adicionar a dependência no arquivo `mix.exs` na parte de `deps`:
 
 ```elixir
-def deps do
+defp deps do
   [
-    {:reports_generator, "~> 0.1.0"}
+    {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/reports_generator](https://hexdocs.pm/reports_generator).
+Observe que o primeiro argumento da tupla é o nome da lib `:credo` e o segundo `"~> 1.5"` é a versão, e a terceira parte não costuma ter, mas no caso do Credo tem porque é usado somente para ambiente de desenvolvimento `:dev` e de teste `:test` para checarmos nosso código. Além disso, `runtime: false` não encapsula essa lib no binário que vai ser gerado para ser executado no nosso servidor.
 
+No VSCode, as dependências já são baixadas automaticamente. Mas é possível baixá-las pelo terminal com o comando:
+
+```bash
+mix deps.get
+```
+
+Uma vez instalado o Credo, vamos dar o comando que vai gerar o arquivo `.credo.exs` para configurá-lo (o que vai checar ou não):
+
+```bash
+mix credo gen.config
+```
+
+Por exemplo, como não vamos fazer a documentação dos módulos, vamos alterar na parte de `Readability Checks` essa parte:
+
+```elixir
+{Credo.Check.Readability.ModuleDoc, false},
+```
+
+Para rodar o Credo:
+
+```bash
+mix credo
+```
+
+E para pegar até o que está com `[priority: :low]` como nesse caso:
+
+```elixir
+{Credo.Check.Readability.MaxLineLength, [priority: :low, max_length: 120]},
+```
+
+usamos o comando do Credo mais severo:
+
+```bash
+mix credo --strict
+```
+
+E caso não queira ficar rodando na linha de comando sempre, podemos baixar a extensão do VSCode [ElixirLinter](https://marketplace.visualstudio.com/items?itemName=iampeterbanjo.elixirlinter) e deixar a opção `Use strict mode with Credo` habilitada.
