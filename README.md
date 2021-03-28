@@ -73,3 +73,49 @@ mix credo --strict
 ```
 
 E caso não queira ficar rodando na linha de comando sempre, podemos baixar a extensão do VSCode [ElixirLinter](https://marketplace.visualstudio.com/items?itemName=iampeterbanjo.elixirlinter) e deixar a opção `Use strict mode with Credo` habilitada.
+
+## Lendo arquivo
+
+Vamos criar a função `build` que vai receber o nome do arquivo .csv como argumento dentro do nosso módulo `ReportsGenerator`
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    file = File.read("reports/#{filename}")
+  end
+end
+```
+
+E rodar no `iex`
+
+```bash
+iex -S mix
+```
+
+Ao ler um arquivo existente:
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> {:ok, "1,pizza,48\r\n2,açaí,45\r\n3,hambúrguer,31\r\n4,esfirra,42\r\n5,hambúrguer,49\r\n6,esfirra,18\r\n7,pizza,27\r\n8,esfirra,25\r\n9,churrasco,24\r\n10,churrasco,36"}
+```
+
+E para um arquivo inexistente:
+
+```elixir
+ReportsGenerator.build("report_testq.csv")
+#..> {:error, :enoent}
+```
+
+Para tratar ambas situações, podemos usar o [case](https://elixir-lang.org/getting-started/case-cond-and-if.html#case), no qual o `_ -> "caso qualquer"` seria o `default`, mas não será necessário para esse caso especificamente:
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    case File.read("reports/#{filename}") do
+      {:ok, result} -> result
+      {:error, reason} -> reason
+      _ -> "caso qualquer"
+    end
+  end
+end
+```
