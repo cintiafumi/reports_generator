@@ -349,3 +349,60 @@ E a função implícita:
 ```elixir
     |> List.update_at(2, &String.to_integer/1)
 ```
+
+## Parse do arquivo
+
+Ao invés de retornar uma lista de listas, seria melhor retornar um Map `%{id: valor}`, onde o `id` seria o `id` do usuário e o `valor` seria a soma dos valores gastos pelo usuário.
+
+[Enum.reduce](https://hexdocs.pm/elixir/Enum.html#reduce/3)
+
+```elixir
+Enum.reduce([1,2,3,4], 0, fn elem, acc -> acc + elem end)
+#..> 10
+```
+
+E vamos observar o que acontece em cada parte:
+
+```elixir
+Enum.reduce([1,2,3,4], %{}, fn elem, acc -> IO.inspect(elem); IO.inspect(acc); Map.put(acc, elem, elem) end)
+#..> 1
+#..> %{}
+#..> 2
+#..> %{1 => 1}
+#..> 3
+#..> %{1 => 1, 2 => 2}
+#..> 4
+#..> %{1 => 1, 2 => 2, 3 => 3}
+#..> %{1 => 1, 2 => 2, 3 => 3, 4 => 4}
+```
+
+Vamos refatorar o método `build` para retornar um Map contendo o id do usuário como chave e o price como valor.
+
+```elixir
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.stream!()
+    |> Enum.reduce(%{}, fn line, report ->
+      [id, _food_name, price] = parse_line(line)
+      Map.put(report, id, price)
+    end)
+  end
+```
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> %{
+#..>   "1" => 48,
+#..>   "10" => 36,
+#..>   "2" => 45,
+#..>   "3" => 31,
+#..>   "4" => 42,
+#..>   "5" => 49,
+#..>   "6" => 18,
+#..>   "7" => 27,
+#..>   "8" => 25,
+#..>   "9" => 24
+#..> }
+```
+
+Mas nosso método ainda está retornando somente o valor da último registro do usuário no arquivo csv.
