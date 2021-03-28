@@ -119,3 +119,74 @@ defmodule ReportsGenerator do
   end
 end
 ```
+
+## Pipe operator
+
+[Pipe operator](https://elixir-lang.org/getting-started/enumerables-and-streams.html#the-pipe-operator) é uma feature do Elixir que ilustra bem como funciona as operações como um chão de fábrica.
+
+Por exemplo, ao tratar a string `" aAaaAaaa \n"`, podemos fazer em várias etapas no `iex`:
+
+```elixir
+string = " aAaaAaaa \n"
+#..> " aAaaAaaa \n"
+string = String.trim(string)
+#..> "aAaaAaaa"
+string = String.downcase(string)
+#..> "aaaaaaaa"
+```
+
+Ou poderíamos fazer em uma linha só, porém não fica tão legível a concatenação das funções:
+
+```elixir
+string = String.trim(String.downcase(" aAaaAaaa \n"))
+#..> "aaaaaaaa"
+```
+
+O pipe operator pega o resultado da operação anterior e passa como primeiro argumento da função seguinte. Então, fica mais elegante e legível a concatenação das funções:
+
+```elixir
+" aaaAaaaaAAAAaaaa \n" |> String.trim() |> String.downcase()
+#..> "aaaaaaaaaaaaaaaa"
+```
+
+Refatorando o código:
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.read()
+    |> handle_file()
+  end
+
+  def handle_file({:ok, file_content}), do: file_content
+  def handle_file({:error, _reason}), do: "Error while opening file"
+end
+```
+
+O primeiro argumento fica implícito na chamada da função seguinte. Caso necessite passar outros argumentos para funções de maior aridade, então precisamos passá-los explicitamente:
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.read()
+    |> handle_file("lalala")
+  end
+
+  def handle_file({:ok, file_content}, msg), do: file_content <> msg
+  def handle_file({:error, _reason}, msg), do: "Error while opening file" <> msg
+end
+```
+
+Obs: a concatenação de string é por `<>`.
+
+No `iex`:
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> "1,pizza,48\r\n2,açaí,45\r\n3,hambúrguer,31\r\n4,esfirra,42\r\n5,hambúrguer,49\r\n6,esfirra,18\r\n7,pizza,27\r\n8,esfirra,25\r\n9,churrasco,24\r\n10,churrasco,36lalala"
+
+ReportsGenerator.build("report_test.csvs")
+#..> "Error while opening filelalala"
+```
