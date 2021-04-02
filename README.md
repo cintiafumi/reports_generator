@@ -405,4 +405,126 @@ ReportsGenerator.build("report_test.csv")
 #..> }
 ```
 
-Mas nosso método ainda está retornando somente o valor da último registro do usuário no arquivo csv.
+Mas nosso método ainda está retornando somente o valor da último registro do usuário no arquivo csv por causa do `Map.put(report, id, price)`.
+
+Para acessar o valor atual, acessar por `report[id]` e somar com o `price`, alterando então para `Map.put(report, id, report[id] + price)`. Mas isso gera uma exceção na primeira vez que roda.
+
+```elixir
+ReportsGenerator.build("report_test.csv")
+#..> ** (ArithmeticError) bad argument in arithmetic expression: nil + 48
+#..>     :erlang.+(nil, 48)
+#..>     (reports_generator 0.1.0) lib/reports_generator.ex:7: anonymous fn/2 in ReportsGenerator.build/1
+#..>     (elixir 1.11.4) lib/enum.ex:3473: anonymous fn/3 in Enum.reduce/3
+#..>     (elixir 1.11.4) lib/stream.ex:1449: Stream.do_element_resource/6
+#..>     (elixir 1.11.4) lib/enum.ex:3473: Enum.reduce/3
+```
+
+Para contornar a soma de `nil` com um valor qualquer, podemos criar um Map acumulador inicial com essa estrutura:
+
+```elixir
+%{
+  "1" => 0,
+  "2" => 0,
+  "3" => 0,
+  "4" => 0,
+  "5" => 0,
+  "..." => 0,
+  "30" => 0,
+}
+```
+
+Pois temos 30 usuários nesses arquivos.
+
+[Enum.into](https://hexdocs.pm/elixir/Enum.html#into/3) é uma função onde podemos pegar uma coleção e converter em outra.
+
+Gerar um `range` pegando o valor inicial e até onde queremos ir
+
+```elixir
+Enum.map(1..30, fn elem -> elem end)
+#..> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+```
+
+Usando syntax sugar:
+
+```elixir
+Enum.into(1..30, %{}, &{&1, &1})
+#..> %{
+#..>   1 => 1,
+#..>   2 => 2,
+#..>   3 => 3,
+#..>   ...
+#..>   29 => 29,
+#..>   30 => 30
+#..> }
+```
+
+Ou, de maneira mais explícita:
+
+```elixir
+Enum.into(1..30, %{}, fn x -> {x, x} end)
+
+#..>   1 => 1,
+#..>   2 => 2,
+#..>   3 => 3,
+#..>   ...
+#..>   29 => 29,
+#..>   30 => 30
+#..> }
+```
+
+Mas queremos a chave como string e o valor zerado:
+
+```elixir
+Enum.into(1..30, %{}, fn x -> {Integer.to_string(x), 0} end)
+#..> %{
+#..>   "1" => 0,
+#..>   "10" => 0,
+#..>   "11" => 0,
+#..>   "12" => 0,
+#..>   ...
+#..> }
+```
+
+Ou, como sugar syntax:
+
+```elixir
+Enum.into(1..30, %{}, &{Integer.to_string(&1), 0})
+```
+
+Vamos criar uma função `report_acc` que retorna esse `Enum.into` acima e refatorar o método `build` do nosso módulo:
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    "reports/#{filename}"
+    |> File.stream!()
+    |> Enum.reduce(report_acc(), fn line, report ->
+      [id, _food_name, price] = parse_line(line)
+      Map.put(report, id, report[id] + price)
+    end)
+  end
+
+  defp parse_line(line) do
+    line
+    |> String.trim()
+    |> String.split(",")
+    |> List.update_at(2, &String.to_integer/1)
+  end
+
+  defp report_acc, do: Enum.into(1..30, %{}, &{Integer.to_string(&1), 0})
+end
+```
+
+E ao recompilar e executar:
+
+```elixir
+ReportsGenerator.build("report_complete.csv")
+#..> %{
+#..>   "1" => 278849,
+#..>   "10" => 268317,
+#..>   "11" => 268877,
+#..>   "12" => 276306,
+#..>   "13" => 282953,
+#..>   ...
+#..> }
+```
