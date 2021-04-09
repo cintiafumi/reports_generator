@@ -601,3 +601,24 @@ defmodule ReportsGenerator do
   defp report_acc, do: Enum.into(1..30, %{}, &{Integer.to_string(&1), 0})
 end
 ```
+
+## Retornando o maior valor
+
+Estamos retornando um relatório de quanto usuário consumiu. Agora faremos uma função que recebe esse `report` e retorne qual usuário que mais consumiu.
+
+O módulo `Enum` tem a função [Enum.max_by()](https://hexdocs.pm/elixir/Enum.html#max_by/4) que vai retornar o ítem de maior valor de uma coleção dada.
+
+Como o `report` está vindo como um `Map` de chave e valor, e quero que retorne pelo maior `value`.
+
+```elixir
+  def fetch_higher_cost(report), do: Enum.max_by(report, fn {_key, value} -> value end)
+```
+
+Pelo `iex`, podemos usa o `pipe operator`:
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost()
+#..> {"13", 282953}
+```
+
+O usuário número `13` foi o que mais consumiu.
