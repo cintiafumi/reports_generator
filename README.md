@@ -528,3 +528,76 @@ ReportsGenerator.build("report_complete.csv")
 #..>   ...
 #..> }
 ```
+
+## Extraindo o parser para um novo módulo
+
+A responsabilidade de parse das linhas pode ficar em outro módulo. Criamos um novo arquivo dentro de `lib` chamado `parser.ex`. E para evitar de repetir o uso de `Enum` nos dois arquivos, vamos usar o módulo `Stream`. Assim como o `File.stream!()` é _lazy_ na execução (só executa quando precisamos), o módulo [Stream](https://hexdocs.pm/elixir/Stream.html) também é. A gente monta um conjunto de operações que vão ser executadas, mas elas serão de fato executadas quando a gente precisar dos valores.
+
+```elixir
+defmodule ReportsGenerator.Parser do
+  def parse_file(filename) do
+    "reports/#{filename}"
+    |> File.stream!()
+    |> Stream.map(fn line -> parse_line(line) end)
+    |> Enum.each(fn elem -> IO.inspect(elem) end) # remover essa linha depois
+  end
+
+  defp parse_line(line) do
+    line
+    |> String.trim()
+    |> String.split(",")
+    |> List.update_at(2, &String.to_integer/1)
+  end
+end
+```
+
+Ao rodar no `iex`:
+
+```elixir
+ReportsGenerator.Parser.parse_file("report_test.csv")
+#..> ["1", "pizza", 48]
+#..> ["2", "açaí", 45]
+#..> ["3", "hambúrguer", 31]
+#..> ["4", "esfirra", 42]
+#..> ["5", "hambúrguer", 49]
+#..> ["6", "esfirra", 18]
+#..> ["7", "pizza", 27]
+#..> ["8", "esfirra", 25]
+#..> ["9", "churrasco", 24]
+#..> ["10", "churrasco", 36]
+#..> :ok
+```
+
+Refatorando agora no módulo `ReportsGenerator`:
+
+```elixir
+defmodule ReportsGenerator do
+  def build(filename) do
+    filename
+    |> ReportsGenerator.Parser.parse_file()
+    |> Enum.reduce(report_acc(), fn [id, _food_name, price], report ->
+      Map.put(report, id, report[id] + price)
+    end)
+  end
+
+  defp report_acc, do: Enum.into(1..30, %{}, &{Integer.to_string(&1), 0})
+end
+```
+
+A primeira melhoria que podemos fazer é quando usamos um módulo externo que tem um nome muito grande, podemos fazer um alias. E outra melhoria é isolar a soma em uma função.
+
+```elixir
+defmodule ReportsGenerator do
+  alias ReportsGenerator.Parser
+
+  def build(filename) do
+    filename
+    |> Parser.parse_file()
+    |> Enum.reduce(report_acc(), fn line, report -> sum_values(line, report) end)
+  end
+
+  defp sum_values([id, _food_name, price], report), do: Map.put(report, id, report[id] + price)
+
+  defp report_acc, do: Enum.into(1..30, %{}, &{Integer.to_string(&1), 0})
+end
+```
