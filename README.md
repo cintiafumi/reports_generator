@@ -627,7 +627,7 @@ O usuário número `13` foi o que mais consumiu.
 
 Também vamos calcular qual comida foi mais frequente. Vamos alterar nosso `report_acc` para percorrer a lista e somar de acordo com a comida. Da mesma forma que criamos um Map zerado para todos os valores, faremos para as comidas.
 
-Ao invés de fazer um `Enum` de `1..30`, vamos criar uma variável de model que é um valor constante que vai ser usado dentro desse model.
+Ao invés de fazer um `Enum` de `1..30`, vamos criar uma variável de module que é um valor constante que vai ser usado dentro desse module.
 
 ```elixir
   def report_acc do
@@ -755,4 +755,82 @@ Outra forma de atualizar o `report` com o pipe operator
 
 ```elixir
     %{report | "users" => users, "foods" => foods}
+```
+
+## Refatorando o retorno do maior preço
+
+Nossa função `fetch_higher_cost` não funciona mais, pois está só comparando entre `users` e `food` qual é o maior. No caso, o retorno é de `users` e isso não faz sentido.
+
+```elixir
+  def fetch_higher_cost(report, option), do: Enum.max_by(report[option], fn {_key, value} -> value end)
+```
+
+Verificando no `iex`
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("users")
+#..> {"13", 282953}
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("foods")
+#..> {"açaí", 37742}
+```
+
+Vamos criar uma nova variável de módulo para evitar que o usuário passe uma opção inválida, pois nosso Map não tem uma chave chamada `banana`.
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("banana")
+#..> ** (Protocol.UndefinedError) protocol Enumerable not implemented for nil of type Atom. This protocol is implemented for the following type(s): HashSet, Range, Map, Function, List, Stream, Date.Range, HashDict, GenEvent.Stream, MapSet, File.Stream, IO.Stream
+#..>     (elixir 1.11.4) lib/enum.ex:1: Enumerable.impl_for!/1
+#..>     (elixir 1.11.4) lib/enum.ex:141: Enumerable.reduce/3
+#..>     (elixir 1.11.4) lib/enum.ex:3473: Enum.reduce/3
+#..>     (elixir 1.11.4) lib/enum.ex:3310: Enum.aggregate_by/4
+```
+
+[Guards](https://hexdocs.pm/elixir/guards.html) são funcionalidades que podemos usar nas nossas definições para estender o poder do pattern matching.
+
+```elixir
+  @options ["foods", "users"]
+
+  def fetch_higher_cost(report, option) when option in @options do
+    Enum.max_by(report[option], fn {_key, value} -> value end)
+  end
+```
+
+No `iex`
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("banana")
+#..> ** (FunctionClauseError) no function clause matching in ReportsGenerator.fetch_higher_cost/2
+#..>     ...
+#..>     The following arguments were given to ReportsGenerator.fetch_higher_cost/2:
+#..>     Attempted function clauses (showing 1 out of 1):
+#..>         def fetch_higher_cost(report, option) when option === "foods" or option === "users"
+#..>     (reports_generator 0.1.0) lib/reports_generator.ex:23: ReportsGenerator.fetch_higher_cost/2
+```
+
+Via pattern matching, criamos uma função para quando a cláusula de cima não for satisfeita e retornamos um erro
+
+```elixir
+  def fetch_higher_cost(report, option), do: {:error, "Invalid option!"}
+```
+
+No `iex`
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("banana")
+#..> {:error, "Invalid option!"}
+```
+
+No caso do sucesso, vamos retornar como tupla também
+
+```elixir
+  def fetch_higher_cost(report, option) when option in @options do
+    {:ok, Enum.max_by(report[option], fn {_key, value} -> value end)}
+  end
+```
+
+No `iex`
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("foods")
+#..> {:ok, {"açaí", 37742}}
 ```
