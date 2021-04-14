@@ -622,3 +622,137 @@ Pelo `iex`, podemos usa o `pipe operator`:
 ```
 
 O usuário número `13` foi o que mais consumiu.
+
+## Calculando a frequência de cada tipo de pedido
+
+Também vamos calcular qual comida foi mais frequente. Vamos alterar nosso `report_acc` para percorrer a lista e somar de acordo com a comida. Da mesma forma que criamos um Map zerado para todos os valores, faremos para as comidas.
+
+Ao invés de fazer um `Enum` de `1..30`, vamos criar uma variável de model que é um valor constante que vai ser usado dentro desse model.
+
+```elixir
+  def report_acc do
+    foods = Enum.into(@available_foods, %{}, &{&1, 0})
+    users = Enum.into(1..30, %{}, &{Integer.to_string(&1), 0})
+
+    %{"users" => users, "foods" => foods}
+  end
+```
+
+Deixamos a função pública somente para ver no `iex` como ficaria:
+
+```elixir
+ReportsGenerator.report_acc()
+#..> %{
+#..>   "foods" => %{
+#..>     "açaí" => 0,
+#..>     "churrasco" => 0,
+#..>     "esfirra" => 0,
+#..>     "hambúrguer" => 0,
+#..>     "pastel" => 0,
+#..>     "pizza" => 0,
+#..>     "prato_feito" => 0,
+#..>     "sushi" => 0
+#..>   },
+#..>   "users" => %{
+#..>     "1" => 0,
+#..>     "10" => 0,
+#..>     "11" => 0,
+#..>     "12" => 0,
+#..>     "13" => 0,
+#..>     "14" => 0,
+#..>     "15" => 0,
+#..>     "16" => 0,
+#..>     "17" => 0,
+#..>     "18" => 0,
+#..>     "19" => 0,
+#..>     "2" => 0,
+#..>     "20" => 0,
+#..>     "21" => 0,
+#..>     "22" => 0,
+#..>     "23" => 0,
+#..>     "24" => 0,
+#..>     "25" => 0,
+#..>     "26" => 0,
+#..>     "27" => 0,
+#..>     "28" => 0,
+#..>     "29" => 0,
+#..>     "3" => 0,
+#..>     "30" => 0,
+#..>     "4" => 0,
+#..>     "5" => 0,
+#..>     "6" => 0,
+#..>     "7" => 0,
+#..>     "8" => 0,
+#..>     "9" => 0
+#..>   }
+#..> }
+```
+
+Agora com o acumulador contendo os dois valores, temos que alterar o `sum_values`. Vamos separar cada um dos Maps pelo pattern matching. Vamos usar cada um dos Maps isolados para atualizar o `report`. Como estamos numa linguagem imutável, precisamos reatribuir o valor em `users` e em `foods`. Por fim, devolvemos o Map com os dois valores.
+
+```elixir
+  defp sum_values([id, food_name, price], %{"foods" => foods, "users" => users} = report) do
+    users = Map.put(users, id, users[id] + price)
+    foods = Map.put(foods, food_name, foods[food_name] + 1)
+
+    report
+    |> Map.put("users", users)
+    |> Map.put("foods", foods)
+  end
+```
+
+No `iex`
+
+```elixir
+"report_complete.csv" |> ReportsGenerator.build()
+#..> %{
+#..>   "foods" => %{
+#..>     "açaí" => 37742,
+#..>     "churrasco" => 37650,
+#..>     "esfirra" => 37462,
+#..>     "hambúrguer" => 37577,
+#..>     "pastel" => 37392,
+#..>     "pizza" => 37365,
+#..>     "prato_feito" => 37519,
+#..>     "sushi" => 37293
+#..>   },
+#..>   "users" => %{
+#..>     "1" => 278849,
+#..>     "10" => 268317,
+#..>     "11" => 268877,
+#..>     "12" => 276306,
+#..>     "13" => 282953,
+#..>     "14" => 277084,
+#..>     "15" => 280105,
+#..>     "16" => 271831,
+#..>     "17" => 272883,
+#..>     "18" => 271421,
+#..>     "19" => 277720,
+#..>     "2" => 271031,
+#..>     "20" => 273446,
+#..>     "21" => 275026,
+#..>     "22" => 278025,
+#..>     "23" => 276523,
+#..>     "24" => 274481,
+#..>     "25" => 274512,
+#..>     "26" => 274199,
+#..>     "27" => 278001,
+#..>     "28" => 274256,
+#..>     "29" => 273030,
+#..>     "3" => 272250,
+#..>     "30" => 275978,
+#..>     "4" => 277054,
+#..>     "5" => 270926,
+#..>     "6" => 272053,
+#..>     "7" => 273112,
+#..>     "8" => 275161,
+#..>     "9" => 274003
+#..>   }
+#..> }
+```
+
+Outra forma de atualizar o `report` com o pipe operator
+
+```elixir
+    %{report | "users" => users, "foods" => foods}
+```
