@@ -834,3 +834,136 @@ No `iex`
 "report_complete.csv" |> ReportsGenerator.build() |> ReportsGenerator.fetch_higher_cost("foods")
 #..> {:ok, {"açaí", 37742}}
 ```
+
+## Testando nosso Parser
+
+Criamos o arquivo `test/parser_test.exs`. Acrescentamos o `ExUnit.Case` e fazemos o `alias` do nosso módulo `ReportsGenerator.Parser`.
+
+Em `describe` colocamos o nome da função e sua aridade.
+
+O cenário que queremos testar é para fazer o `parse` do arquivo em `test`. Utilizar sempre o arquivo de teste `report_test.csv`. Primeiro faz o teste falhar, como `banana test driven development` 🤣
+
+```elixir
+defmodule ReportsGenerator.ParserTest do
+  use ExUnit.Case
+
+  alias ReportsGenerator.Parser
+
+  describe "parse_file/1" do
+    test "parses the file" do
+      file_name = "report_test.csv"
+
+      response = Parser.parse_file(file_name)
+
+      expected_response = "banana"
+
+      assert response == expected_response
+    end
+  end
+end
+```
+
+Para rodar somente o arquivo desejado
+
+```bash
+mix test test/parser_test.exs
+  # 1) test parse_file/1 parses the file (ReportsGenerator.ParserTest)
+    #  test/parser_test.exs:7
+    #  Assertion with == failed
+    #  code:  assert response == expected_response
+    #  left:  #Stream<[enum: %File.Stream{line_or_bytes: :line, modes: [:raw, :read_ahead, :binary], path: "reports/report_test.csv", raw: true}, funs: [#Function<47.104660160/1 in Stream.map/2>]]>
+    #  right: "banana"
+    #  stacktrace:
+      #  test/parser_test.exs:29: (test)
+# Finished in 0.03 seconds
+# 1 test, 1 failure
+```
+
+No nosso `parse` devolvemos um `Stream.map`, ou seja, não tem conteúdo nenhum pois o `Stream` é `lazy`. Só vai executar quando precisarmos do conteúdo. Para não temos que fazer um `pattern matching` com a structure esquisita dentro do Stream, vamos começar com o `file_name`, passar para o `parse_file` e o resultado vamos passar para o `Enum.map` apenas imprimindo o valor dessa linha.
+
+Ao invés de usar o style com pipe na horizontal, seguir o [style guide](https://github.com/christopheradams/elixir_style_guide) e deixar o style com pipe na vertical.
+
+```elixir
+response = file_name |> Parser.parse_file() |> Enum.map(& &1)
+```
+
+```elixir
+defmodule ReportsGenerator.ParserTest do
+  use ExUnit.Case
+
+  alias ReportsGenerator.Parser
+
+  describe "parse_file/1" do
+    test "parses the file" do
+      file_name = "report_test.csv"
+
+      response =
+        file_name
+        |> Parser.parse_file()
+        |> Enum.map(& &1)
+
+      expected_response = "banana"
+
+      assert response == expected_response
+    end
+  end
+end
+```
+
+Agora que usamos `Enum.map`, teremos o resultado de cada linha. Para rodar somente um teste passando o número da linha de código que está.
+
+```bash
+mix test test/parser_test.exs:7
+#   1) test parse_file/1 parses the file (ReportsGenerator.ParserTest)
+#      test/parser_test.exs:7
+#      Assertion with == failed
+#      code:  assert response == expected_response
+#      left:  [["1", "pizza", 48], ["2", "açaí", 45], ["3", "hambúrguer", 31], ["4", "esfirra", 42], ["5", "hambúrguer", 49], ["6", "esfirra", 18], ["7", "pizza", 27], ["8", "esfirra", 25], ["9", "churrasco", 24], ["10", "churrasco", 36]]
+#      right: "banana"
+#      stacktrace:
+#        test/parser_test.exs:17: (test)
+```
+
+Arrumando `expected_response`:
+
+```elixir
+defmodule ReportsGenerator.ParserTest do
+  use ExUnit.Case
+
+  alias ReportsGenerator.Parser
+
+  describe "parse_file/1" do
+    test "parses the file" do
+      file_name = "report_test.csv"
+
+      response =
+        file_name
+        |> Parser.parse_file()
+        |> Enum.map(& &1)
+
+      expected_response = [
+        ["1", "pizza", 48],
+        ["2", "açaí", 45],
+        ["3", "hambúrguer", 31],
+        ["4", "esfirra", 42],
+        ["5", "hambúrguer", 49],
+        ["6", "esfirra", 18],
+        ["7", "pizza", 27],
+        ["8", "esfirra", 25],
+        ["9", "churrasco", 24],
+        ["10", "churrasco", 36]
+      ]
+
+      assert response == expected_response
+    end
+  end
+end
+```
+
+```bash
+mix test test/parser_test.exs
+# .
+
+# Finished in 0.05 seconds
+# 1 test, 0 failures
+```
