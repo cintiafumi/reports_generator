@@ -967,3 +967,265 @@ mix test test/parser_test.exs
 # Finished in 0.05 seconds
 # 1 test, 0 failures
 ```
+
+## Testando o ReportsGenerator
+
+Vamos limpar o arquivo `test/reports_generator_test.exs` criado por padrão. Temos duas funções públicas em `ReportsGenerator` que são `build` e `fetch_higher_cost`.
+
+No `build` não tem cenários de borda para testar. Apenas o cenário de buildar:
+
+```elixir
+defmodule ReportsGeneratorTest do
+  use ExUnit.Case
+
+  describe "build/1" do
+    test "builds the report" do
+      file_name = "report_test.csv"
+
+      response = ReportsGenerator.build(file_name)
+
+      expected_response = "banana"
+
+      assert response == expected_response
+    end
+  end
+end
+
+```
+
+```bash
+mix test test/reports_generator_test.exs
+  # 1) test build/1 builds the report (ReportsGeneratorTest)
+  #    test/reports_generator_test.exs:5
+  #    Assertion with == failed
+  #    code:  assert response == expected_response
+  #    left:  %{"foods" => %{"açaí" => 1, "churrasco" => 2, "esfirra" => 3, "hambúrguer" => 2, "pastel" => 0, "pizza" => 2, "prato_feito" => 0, "sushi" => 0}, "users" => %{"1" => 48, "10" => 36, "11" => 0, "12" => 0, "13" => 0, "14" => 0, "15" => 0, "16" => 0, "17" => 0, "18" => 0, "19" => 0, "2" => 45, "20" => 0, "21" => 0, "22" => 0, "23" => 0, "24" => 0, "25" => 0, "26" => 0, "27" => 0, "28" => 0, "29" => 0, "3" => 31, "30" => 0, "4" => 42, "5" => 49, "6" => 18, "7" => 27, "8" => 25, "9" => 24}}
+  #    right: "banana"
+```
+
+Não ver como negativo ver um `expected_response` bem extenso.
+
+```elixir
+defmodule ReportsGeneratorTest do
+  use ExUnit.Case
+
+  describe "build/1" do
+    test "builds the report" do
+      # SETUP
+      file_name = "report_test.csv"
+
+      # EXERCISE
+      response = ReportsGenerator.build(file_name)
+
+      expected_response = %{
+        "foods" => %{
+          "açaí" => 1,
+          "churrasco" => 2,
+          "esfirra" => 3,
+          "hambúrguer" => 2,
+          "pastel" => 0,
+          "pizza" => 2,
+          "prato_feito" => 0,
+          "sushi" => 0
+        },
+        "users" => %{
+          "1" => 48,
+          "10" => 36,
+          "11" => 0,
+          "12" => 0,
+          "13" => 0,
+          "14" => 0,
+          "15" => 0,
+          "16" => 0,
+          "17" => 0,
+          "18" => 0,
+          "19" => 0,
+          "2" => 45,
+          "20" => 0,
+          "21" => 0,
+          "22" => 0,
+          "23" => 0,
+          "24" => 0,
+          "25" => 0,
+          "26" => 0,
+          "27" => 0,
+          "28" => 0,
+          "29" => 0,
+          "3" => 31,
+          "30" => 0,
+          "4" => 42,
+          "5" => 49,
+          "6" => 18,
+          "7" => 27,
+          "8" => 25,
+          "9" => 24
+        }
+      }
+
+      # ASSERTION
+      assert response == expected_response
+    end
+  end
+end
+```
+
+No `fetch_higher_cost` temos mais cenários para testar
+
+```elixir
+  describe "fetch_higher_cost/2" do
+    test "when the option is 'users', returns the user who spent the most" do
+      file_name = "report_test.csv"
+
+      response = file_name
+      |> ReportsGenerator.build()
+      |> ReportsGenerator.fetch_higher_cost("users")
+
+      expected_response = "banana"
+
+      assert response == expected_response
+    end
+  end
+```
+
+Executando
+
+```bash
+mix test test/reports_generator_test.exs:60
+  # 1) test fetch_higher_cost/2 when the option is 'users', returns the user who spent the most (ReportsGeneratorTest)
+  #    test/reports_generator_test.exs:60
+  #    Assertion with == failed
+  #    code:  assert response == expected_response
+  #    left:  {:ok, {"5", 49}}
+  #    right: "banana"
+  #    stacktrace:
+  #      test/reports_generator_test.exs:69: (test)
+```
+
+E arrumando o teste:
+
+```elixir
+  describe "fetch_higher_cost/2" do
+    test "when the option is 'users', returns the user who spent the most" do
+      file_name = "report_test.csv"
+
+      response = file_name
+      |> ReportsGenerator.build()
+      |> ReportsGenerator.fetch_higher_cost("users")
+
+      expected_response = {:ok, {"5", 49}}
+
+      assert response == expected_response
+    end
+  end
+```
+
+Vamos fazer para `foods` e para uma opção inválida
+
+```elixir
+defmodule ReportsGeneratorTest do
+  use ExUnit.Case
+
+  describe "build/1" do
+    test "builds the report" do
+      file_name = "report_test.csv"
+
+      response = ReportsGenerator.build(file_name)
+
+      expected_response = %{
+        "foods" => %{
+          "açaí" => 1,
+          "churrasco" => 2,
+          "esfirra" => 3,
+          "hambúrguer" => 2,
+          "pastel" => 0,
+          "pizza" => 2,
+          "prato_feito" => 0,
+          "sushi" => 0
+        },
+        "users" => %{
+          "1" => 48,
+          "10" => 36,
+          "11" => 0,
+          "12" => 0,
+          "13" => 0,
+          "14" => 0,
+          "15" => 0,
+          "16" => 0,
+          "17" => 0,
+          "18" => 0,
+          "19" => 0,
+          "2" => 45,
+          "20" => 0,
+          "21" => 0,
+          "22" => 0,
+          "23" => 0,
+          "24" => 0,
+          "25" => 0,
+          "26" => 0,
+          "27" => 0,
+          "28" => 0,
+          "29" => 0,
+          "3" => 31,
+          "30" => 0,
+          "4" => 42,
+          "5" => 49,
+          "6" => 18,
+          "7" => 27,
+          "8" => 25,
+          "9" => 24
+        }
+      }
+
+      assert response == expected_response
+    end
+  end
+
+  describe "fetch_higher_cost/2" do
+    test "when the option is 'users', returns the user who spent the most" do
+      file_name = "report_test.csv"
+
+      response = file_name
+      |> ReportsGenerator.build()
+      |> ReportsGenerator.fetch_higher_cost("users")
+
+      expected_response = {:ok, {"5", 49}}
+
+      assert response == expected_response
+    end
+
+    test "when the option is 'foods', returns the most consumed food" do
+      file_name = "report_test.csv"
+
+      response = file_name
+      |> ReportsGenerator.build()
+      |> ReportsGenerator.fetch_higher_cost("foods")
+
+      expected_response = {:ok, {"esfirra", 3}}
+
+      assert response == expected_response
+    end
+
+    test "when the as invalid option is given, returns an error" do
+      file_name = "report_test.csv"
+
+      response = file_name
+      |> ReportsGenerator.build()
+      |> ReportsGenerator.fetch_higher_cost("bananas")
+
+      expected_response = {:error, "Invalid option!"}
+
+      assert response == expected_response
+    end
+  end
+end
+```
+
+O `ExUnit` roda todos os testes em paralelo, o que faz com que a switch seja muito rápida mesmo que tenha muitos testes.
+
+```bash
+mix test
+# .....
+
+# Finished in 0.07 seconds
+# 5 tests, 0 failures
+```
