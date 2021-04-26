@@ -1229,3 +1229,80 @@ mix test
 # Finished in 0.07 seconds
 # 5 tests, 0 failures
 ```
+
+---
+
+## Medindo o tempo de execução
+
+Medimos o tempo de execução no Elixir pelo módulo `timer` do Erlang. No `iex` podemos ver as funções digitando `:timer.` e a tecla `tab`:
+
+```elixir
+:timer.
+#..> apply_after/4       apply_interval/4    cancel/1
+#..> code_change/3       exit_after/2        exit_after/3
+#..> get_status/0        handle_call/3       handle_cast/2
+#..> handle_info/2       hms/3               hours/1
+#..> init/1              kill_after/1        kill_after/2
+#..> minutes/1           now_diff/2          seconds/1
+#..> send_after/2        send_after/3        send_interval/2
+#..> send_interval/3     sleep/1             start/0
+#..> start_link/0        tc/1                tc/2
+#..> tc/3                terminate/2
+```
+
+Iremos usar a função [tc/1](https://erlang.org/doc/man/timer.html#tc-1) com aridade 1, que espera uma função anônima com a função em si que queremos executar para medir o tempo de execução.
+
+Vamos executar no `iex`:
+
+```elixir
+:timer.tc(fn -> ReportsGenerator.build("report_complete.csv") end)
+#..>{2508696,
+#..> %{
+#..>   "foods" => %{
+#..>     "açaí" => 37742,
+#..>     "churrasco" => 37650,
+#..>     "esfirra" => 37462,
+#..>     "hambúrguer" => 37577,
+#..>     "pastel" => 37392,
+#..>     "pizza" => 37365,
+#..>     "prato_feito" => 37519,
+#..>     "sushi" => 37293
+#..>   },
+#..>   "users" => %{
+#..>     "1" => 278849,
+#..>     "10" => 268317,
+#..>     "11" => 268877,
+#..>     "12" => 276306,
+#..>     "13" => 282953,
+#..>     "14" => 277084,
+#..>     "15" => 280105,
+#..>     "16" => 271831,
+#..>     "17" => 272883,
+#..>     "18" => 271421,
+#..>     "19" => 277720,
+#..>     "2" => 271031,
+#..>     "20" => 273446,
+#..>     "21" => 275026,
+#..>     "22" => 278025,
+#..>     "23" => 276523,
+#..>     "24" => 274481,
+#..>     "25" => 274512,
+#..>     "26" => 274199,
+#..>     "27" => 278001,
+#..>     "28" => 274256,
+#..>     "29" => 273030,
+#..>     "3" => 272250,
+#..>     "30" => 275978,
+#..>     "4" => 277054,
+#..>     "5" => 270926,
+#..>     "6" => 272053,
+#..>     "7" => 273112,
+#..>     "8" => 275161,
+#..>     "9" => 274003
+#..>   }
+#..> }}
+```
+
+onde o primeiro elemento da tupla (2508696) é o tempo que levou a execução em microssegundos.
+
+Ao invés de consumir o `report_complete.csv`, vamos consumir de forma paralela concorrente os três arquivos e agregar o resultado num import só.
