@@ -1340,3 +1340,89 @@ Processos, concorrência, paralelismo no Elixir.
 - [x] Voce e sua irmã jogando videogame
 
 📚 Livro: [Elixir in Action](https://livebook.manning.com/book/elixir-in-action/chapter-1)
+
+---
+
+## Processos na prática, um exemplo simples
+
+No `iex`, podemos ver como criar um processo:
+
+```elixir
+spawn fn -> IO.puts("banana") end
+#..> banana
+#..> #PID<0.108.0>
+```
+
+Criamos um processo que executou alguma coisa. `PID` é o _process id_. Vamos armazenar esse processo e utilizar o módulo [Process](https://hexdocs.pm/elixir/Process.html) para ver se esse processo ainda existe:
+
+```elixir
+pid = spawn fn -> IO.puts("banana") end
+#..> banana
+#..> #PID<0.110.0>
+Process.alive?(pid)
+#..> false
+```
+
+Em geral, um processo nasce, executa e encerra. Alguns outros processos, como `iex` continuam executando em um processo.
+
+```elixir
+self()
+#..> #PID<0.106.0>
+pid = self()
+#..> #PID<0.106.0>
+Process.alive?(pid)
+#..> true
+```
+
+Processos em elixir seguem um modelo de atores, ou seja, criamos um processo e cada um dos processos tem uma caixa de mensagens e eles se comunicam entre si a todo momento enviando e recebendo mensagens, como se fossem e-mails.
+
+`self()` retorna o `PID` do processo do `iex`. E vamos mandar uma mensagem para o `iex` com o `send`. E a mensagem pode ser qualquer dado.
+
+```elixir
+pid_iex = self()
+#..> #PID<0.106.0>
+send pid_iex, {:ok, "mensagem de sucesso"}
+#..> {:ok, "mensagem de sucesso"}
+```
+
+Mas todo processo tem que ter definida uma função `receive` para receber uma mensagem.
+
+```elixir
+receive do
+{:ok, msg} -> msg
+{:error, _} -> "Deu ruim!"
+end
+#..> "mensagem de sucesso"
+```
+
+Uma vez definida a função `receive`, já existia uma mensagem na caixinha do meu processo, então essa mensagem foi consumida e exibiu `"mensagem de sucesso"`.
+
+Vamos mandar uma mensagem de erro e consumir essa mensagem:
+
+```elixir
+send pid_iex, {:error, "mensagem de erro"}
+#..> {:error, "mensagem de erro"}
+receive do
+{:ok, msg} -> msg
+{:error, _} -> "Deu ruim!"
+end
+#..> "Deu ruim!"
+```
+
+Criar um processo com `spawn`, envia mensagem pelo `send` e recebe pelo `receive`.
+
+Vamos criar um processo novo:
+
+```elixir
+spawn fn -> send(pid_iex, {:ok, "deu certo?"}) end
+#..> #PID<0.129.0>
+```
+
+Vamos definir o `receive` de novo:
+
+```elixir
+receive do
+{:ok, msg} -> msg
+end
+#..> "deu certo?"
+```
