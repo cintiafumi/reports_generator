@@ -1,88 +1,88 @@
-<mxfile>
-    <diagram id="striCN917Iqn7kjDKsYg" name="Page-1">
-        <mxGraphModel dx="611" dy="499" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-            <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="8" style="orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=0;edgeStyle=entityRelationEdgeStyle;sketch=1;" edge="1" parent="1" source="2" target="5">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="9" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;" edge="1" parent="1" source="2" target="4">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="10" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;" edge="1" parent="1" source="2" target="3">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="11" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;" edge="1" parent="1" source="2" target="6">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="2" value="PROCESSO DO SO" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="120" y="270" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="3" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="320" y="320" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="4" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="320" y="220" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="5" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="320" y="120" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="6" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="320" y="420" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="7" value="Cenário em uma CPU de 4 núcleos" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="120" y="40" width="410" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="12" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="560" y="110" width="130" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="13" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="560" y="210" width="130" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="14" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="560" y="310" width="130" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="15" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" vertex="1" parent="1">
-                    <mxGeometry x="560" y="410" width="130" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="16" value="" style="shape=flexArrow;endArrow=classic;html=1;strokeColor=#f0f0f0;sketch=1;" edge="1" parent="1" target="12">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="450" y="150" as="sourcePoint"/>
-                        <mxPoint x="490" y="280" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="17" value="" style="shape=flexArrow;endArrow=classic;html=1;strokeColor=#f0f0f0;sketch=1;" edge="1" parent="1" target="13">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="450" y="250" as="sourcePoint"/>
-                        <mxPoint x="550" y="260" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="18" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=1;fillColor=#B3B3B3;fillStyle=solid;" vertex="1" parent="1">
-                    <mxGeometry x="360" y="110" width="40" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="19" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;fillColor=#B3B3B3;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=0;" vertex="1" parent="1">
-                    <mxGeometry x="360" y="310" width="40" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="20" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;fillColor=#B3B3B3;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=0;" vertex="1" parent="1">
-                    <mxGeometry x="360" y="210" width="40" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="22" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;fillColor=#B3B3B3;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=0;" vertex="1" parent="1">
-                    <mxGeometry x="360" y="410" width="40" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="23" value="" style="shape=flexArrow;endArrow=classic;html=1;strokeColor=#f0f0f0;sketch=1;" edge="1" parent="1" target="14">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="450" y="350" as="sourcePoint"/>
-                        <mxPoint x="490" y="290" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="24" value="" style="shape=flexArrow;endArrow=classic;html=1;strokeColor=#f0f0f0;sketch=1;" edge="1" parent="1" target="15">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="450" y="450" as="sourcePoint"/>
-                        <mxPoint x="490" y="290" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-            </root>
-        </mxGraphModel>
-    </diagram>
+<mxfile host="app.diagrams.net" modified="2021-05-11T00:27:25.533Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36" version="14.6.6" etag="xK-40Ln2wYuICbrl_m2w" type="github">
+  <diagram id="striCN917Iqn7kjDKsYg" name="Page-1">
+    <mxGraphModel dx="946" dy="623" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8" style="orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=0;edgeStyle=entityRelationEdgeStyle;sketch=1;" parent="1" source="2" target="5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;" parent="1" source="2" target="4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="10" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;" parent="1" source="2" target="3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="11" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;sketch=1;" parent="1" source="2" target="6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2" value="PROCESSO DO SO" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="270" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="320" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="320" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="320" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="Scheduler" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="320" y="420" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="Cenário em uma CPU de 4 núcleos" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="40" width="410" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="110" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="210" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="310" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="Muitos processos" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;shadow=0;sketch=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="410" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="" style="shape=flexArrow;endArrow=classic;html=1;sketch=1;" parent="1" target="12" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="150" as="sourcePoint" />
+            <mxPoint x="490" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="17" value="" style="shape=flexArrow;endArrow=classic;html=1;sketch=1;" parent="1" target="13" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="250" as="sourcePoint" />
+            <mxPoint x="550" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="18" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=1;fillColor=#B3B3B3;fillStyle=solid;" parent="1" vertex="1">
+          <mxGeometry x="360" y="110" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;fillColor=#B3B3B3;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=0;" parent="1" vertex="1">
+          <mxGeometry x="360" y="310" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="20" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;fillColor=#B3B3B3;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=0;" parent="1" vertex="1">
+          <mxGeometry x="360" y="210" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="Thread&lt;br&gt;do SO" style="text;html=1;strokeColor=none;fillColor=#B3B3B3;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;sketch=0;" parent="1" vertex="1">
+          <mxGeometry x="360" y="410" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="" style="shape=flexArrow;endArrow=classic;html=1;sketch=1;" parent="1" target="14" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="350" as="sourcePoint" />
+            <mxPoint x="490" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="24" value="" style="shape=flexArrow;endArrow=classic;html=1;sketch=1;" parent="1" target="15" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="450" as="sourcePoint" />
+            <mxPoint x="490" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
