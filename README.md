@@ -1306,3 +1306,35 @@ Vamos executar no `iex`:
 onde o primeiro elemento da tupla (2508696) é o tempo que levou a execução em microssegundos.
 
 Ao invés de consumir o `report_complete.csv`, vamos consumir de forma paralela concorrente os três arquivos e agregar o resultado num import só.
+
+---
+
+# O que há por trás dos processos em Elixir?
+
+Processos, concorrência, paralelismo no Elixir.
+
+## Processos
+
+- [x] Os desafios de um sistema web atual
+- [x] Processos devem ser isolados
+
+## Processos na BEAM (máquina virtual da Erlang)
+
+- [x] Escalabilidade
+- [x] Tolerância a falhas
+- [x] Distribuição
+
+- [x] Processo do sistema operacional vs Processo da BEAM
+- [x] Os processos da BEAM são muito leves
+- [x] Criados em questões de microssegundos e utilizam poucos kB. Processos do OS gastam alguns MB.
+
+- [x] Cada thread executa de forma concorrente
+- [x] Um scheduler por núcleo da CPU
+  - [x] A máquina virtual roda em um único processo do sistema operacional
+  - [x] Cada scheduler pode criar milhares de processos. O limite teórico é de 134 milhões!
+
+## Concorrência vs Paralelismo
+
+- [x] Voce e sua irmã jogando videogame
+
+📚 Livro: [Elixir in Action](https://livebook.manning.com/book/elixir-in-action/chapter-1)
