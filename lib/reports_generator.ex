@@ -20,7 +20,7 @@ defmodule ReportsGenerator do
     |> Enum.reduce(report_acc(), fn line, report -> sum_values(line, report) end)
   end
 
-  def build_from_many(filenames) when not is_list(filenames)do
+  def build_from_many(filenames) when not is_list(filenames) do
     {:error, "Please, provide a list of strings."}
   end
 
@@ -46,7 +46,10 @@ defmodule ReportsGenerator do
     build_report(foods, users)
   end
 
-  defp sum_reports(%{"foods" => foods1, "users" => users1}, %{"foods" => foods2, "users" => users2}) do
+  defp sum_reports(%{"foods" => foods1, "users" => users1}, %{
+         "foods" => foods2,
+         "users" => users2
+       }) do
     foods = merge_maps(foods1, foods2)
     users = merge_maps(users1, users2)
 
