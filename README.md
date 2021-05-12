@@ -1426,3 +1426,301 @@ receive do
 end
 #..> "deu certo?"
 ```
+
+---
+
+## Criando nossa primeira versão paralela
+
+Vamos usar o módulo [Task](https://hexdocs.pm/elixir/Task.html), que são conveniências para usar `spawn`. Podemos iniciar a task com `Task.async` e usar o callback com `Task.await`. Porém, a função `async_stream` funcionará melhor para nosso caso, que espera um Enum como primeiro argumento. E como é `stream`, ele vai ser avaliado como `lazy` e não precisamos usar o `await` nesse caso.
+
+```elixir
+  def build_from_many(filenames) do
+    filenames
+    |> Task.async_stream(&build/1)
+    # outra forma implícita
+    # |> Task.async_stream(&build(&1))
+    # forma explícita
+    # |> Task.async_stream(fn filename -> build(filename))
+    |> Enum.map(& &1)
+  end
+```
+
+Vamos ver como fica o `stream`. Como é `lazy`, então precisamos colocar o `Enum.map(& &1)` somente para ver. Vamos passar uma lista de arquivos.
+
+```elixir
+ReportsGenerator.build_from_many(["report_1.csv", "report_2.csv", "report_3.csv"])
+#..> [
+#..>   ok: %{
+#..>     "foods" => %{
+#..>       "açaí" => 12543,
+#..>       "churrasco" => 12585,
+#..>       "esfirra" => 12468,
+#..>       "hambúrguer" => 12593,
+#..>       "pastel" => 12449,
+#..>       "pizza" => 12426,
+#..>       "prato_feito" => 12486,
+#..>       "sushi" => 12450
+#..>     },
+#..>     "users" => %{
+#..>       "1" => 94115,
+#..>       "10" => 88751,
+#..>       "11" => 89791,
+#..>       "12" => 92811,
+#..>       "13" => 92902,
+#..>       "14" => 90163,
+#..>       "15" => 95196,
+#..>       "16" => 91100,
+#..>       "17" => 93569,
+#..>       "18" => 91691,
+#..>       "19" => 90914,
+#..>       "2" => 92473,
+#..>       "20" => 90303,
+#..>       "21" => 90351,
+#..>       "22" => 94393,
+#..>       "23" => 94706,
+#..>       "24" => 90921,
+#..>       "25" => 90969,
+#..>       "26" => 89000,
+#..>       "27" => 90489,
+#..>       "28" => 93574,
+#..>       "29" => 88447,
+#..>       "3" => 90693,
+#..>       "30" => 91738,
+#..>       "4" => 91394,
+#..>       "5" => 91247,
+#..>       "6" => 90687,
+#..>       "7" => 93026,
+#..>       "8" => 92928,
+#..>       "9" => 91770
+#..>     }
+#..>   },
+#..>   ok: %{
+#..>     "foods" => %{
+#..>       "açaí" => 12695,
+#..>       "churrasco" => 12468,
+#..>       "esfirra" => 12386,
+#..>       "hambúrguer" => 12520,
+#..>       "pastel" => 12533,
+#..>       "pizza" => 12462,
+#..>       "prato_feito" => 12471,
+#..>       "sushi" => 12465
+#..>     },
+#..>     "users" => %{
+#..>       "1" => 90208,
+#..>       "10" => 87816,
+#..>       "11" => 89253,
+#..>       "12" => 93040,
+#..>       "13" => 94096,
+#..>       "14" => 94690,
+#..>       "15" => 91322,
+#..>       "16" => 91196,
+#..>       "17" => 88062,
+#..>       "18" => 91552,
+#..>       "19" => 93248,
+#..>       "2" => 89401,
+#..>       "20" => 91386,
+#..>       "21" => 91871,
+#..>       "22" => 91527,
+#..>       "23" => 89308,
+#..>       "24" => 91314,
+#..>       "25" => 94039,
+#..>       "26" => 91918,
+#..>       "27" => 93380,
+#..>       "28" => 89932,
+#..>       "29" => 93527,
+#..>       "3" => 90975,
+#..>       "30" => 93089,
+#..>       "4" => 93918,
+#..>       "5" => 91428,
+#..>       "6" => 91607,
+#..>       "7" => 90088,
+#..>       "8" => 89736,
+#..>       "9" => 91542
+#..>     }
+#..>   },
+#..>   ok: %{
+#..>     "foods" => %{
+#..>       "açaí" => 12504,
+#..>       "churrasco" => 12597,
+#..>       "esfirra" => 12608,
+#..>       "hambúrguer" => 12464,
+#..>       "pastel" => 12410,
+#..>       "pizza" => 12477,
+#..>       "prato_feito" => 12562,
+#..>       "sushi" => 12378
+#..>     },
+#..>     "users" => %{
+#..>       "1" => 94526,
+#..>       "10" => 91750,
+#..>       "11" => 89833,
+#..>       "12" => 90455,
+#..>       "13" => 95955,
+#..>       "14" => 92231,
+#..>       "15" => 93587,
+#..>       "16" => 89535,
+#..>       "17" => 91252,
+#..>       "18" => 88178,
+#..>       "19" => 93558,
+#..>       "2" => 89157,
+#..>       "20" => 91757,
+#..>       "21" => 92804,
+#..>       "22" => 92105,
+#..>       "23" => 92509,
+#..>       "24" => 92246,
+#..>       "25" => 89504,
+#..>       "26" => 93281,
+#..>       "27" => 94132,
+#..>       "28" => 90750,
+#..>       "29" => 91056,
+#..>       "3" => 90582,
+#..>       "30" => 91151,
+#..>       "4" => 91742,
+#..>       "5" => 88251,
+#..>       "6" => 89759,
+#..>       "7" => 89998,
+#..>       "8" => 92497,
+#..>       "9" => 90691
+#..>     }
+#..>   }
+#..> ]
+```
+
+Como estamos rodando em paralelo, o primeiro elemento é um `:ok`, ou seja, a operação aconteceu com sucesso. E o segundo é um map, que é o retorno da função `build_from_many`. Como executamos 3 arquivos ao mesmo tempo, precisamos aglutinar esse resultado. Ao invés de 3 maps, queremos apenas 1 map com o resultado completo. Então, vamos usar a função `Enum.reduce`.
+
+Como a função sum_values pegava apenas os valores de um único map, temos que criar outra função `sum_reports1` que some o map que está no accumulator com o map atual que está sendo lido, sendo `report` aquele map inicialmente vazio.
+
+```elixir
+  def build_from_many(filenames) do
+    filenames
+    |> Task.async_stream(&build/1)
+    |> Enum.reduce(report_acc(), fn {:ok, result}, report -> sum_reports(report, result) end)
+  end
+```
+
+Essa função vai somar `foods1` com `foods2` e `users1` com `users2`. Felizmente, já existe uma função `Map.merge` que recebe 2 mapas e podemos falar para juntar os 2 mapas seguindo uma função determinada.
+
+Não nos importamos com as chaves `_key` que seriam, por exemplo, `açaí`.
+
+```elixir
+  defp sum_reports(%{"foods" => foods1, "users" => users1}, %{"foods" => foods2, "users" => users2}) do
+    foods = Map.merge(foods1, foods2, fn _key, value1, value2 -> value1 + value2 end)
+    users = Map.merge(users1, users2, fn _key, value1, value2 -> value1 + value2 end)
+
+    %{"users" => users, "foods" => foods}
+  end
+```
+
+Para evitar repetir o `Map.merge`, vamos extraí-lo numa função anônima chamada `merge_maps`, que vai mergear 2 mapas somando seus valores.
+
+```elixir
+  defp sum_reports(%{"foods" => foods1, "users" => users1}, %{"foods" => foods2, "users" => users2}) do
+    foods = merge_maps(foods1, foods2)
+    users = merge_maps(users1, users2)
+
+    %{"users" => users, "foods" => foods}
+  end
+
+  defp merge_maps(map1, map2) do
+    Map.merge(map1, map2, fn _key, value1, value2 -> value1 + value2 end)
+  end
+```
+
+Vamos recompilar no `iex` e verificar o resultado
+
+```elixir
+ReportsGenerator.build_from_many(["report_1.csv", "report_2.csv", "report_3.csv"])
+#..> %{
+#..>   "foods" => %{
+#..>     "açaí" => 37742,
+#..>     "churrasco" => 37650,
+#..>     "esfirra" => 37462,
+#..>     "hambúrguer" => 37577,
+#..>     "pastel" => 37392,
+#..>     "pizza" => 37365,
+#..>     "prato_feito" => 37519,
+#..>     "sushi" => 37293
+#..>   },
+#..>   "users" => %{
+#..>     "1" => 278849,
+#..>     "10" => 268317,
+#..>     "11" => 268877,
+#..>     "12" => 276306,
+#..>     "13" => 282953,
+#..>     "14" => 277084,
+#..>     "15" => 280105,
+#..>     "16" => 271831,
+#..>     "17" => 272883,
+#..>     "18" => 271421,
+#..>     "19" => 277720,
+#..>     "2" => 271031,
+#..>     "20" => 273446,
+#..>     "21" => 275026,
+#..>     "22" => 278025,
+#..>     "23" => 276523,
+#..>     "24" => 274481,
+#..>     "25" => 274512,
+#..>     "26" => 274199,
+#..>     "27" => 278001,
+#..>     "28" => 274256,
+#..>     "29" => 273030,
+#..>     "3" => 272250,
+#..>     "30" => 275978,
+#..>     "4" => 277054,
+#..>     "5" => 270926,
+#..>     "6" => 272053,
+#..>     "7" => 273112,
+#..>     "8" => 275161,
+#..>     "9" => 274003
+#..>   }
+#..> }
+```
+
+Comparado com o arquivo contendo a versão completa e ver se dá o mesmo resultado
+
+```elixir
+ReportsGenerator.build("report_complete.csv")
+#..> %{
+#..>   "foods" => %{
+#..>     "açaí" => 37742,
+#..>     "churrasco" => 37650,
+#..>     "esfirra" => 37462,
+#..>     "hambúrguer" => 37577,
+#..>     "pastel" => 37392,
+#..>     "pizza" => 37365,
+#..>     "prato_feito" => 37519,
+#..>     "sushi" => 37293
+#..>   },
+#..>   "users" => %{
+#..>     "1" => 278849,
+#..>     "10" => 268317,
+#..>     "11" => 268877,
+#..>     "12" => 276306,
+#..>     "13" => 282953,
+#..>     "14" => 277084,
+#..>     "15" => 280105,
+#..>     "16" => 271831,
+#..>     "17" => 272883,
+#..>     "18" => 271421,
+#..>     "19" => 277720,
+#..>     "2" => 271031,
+#..>     "20" => 273446,
+#..>     "21" => 275026,
+#..>     "22" => 278025,
+#..>     "23" => 276523,
+#..>     "24" => 274481,
+#..>     "25" => 274512,
+#..>     "26" => 274199,
+#..>     "27" => 278001,
+#..>     "28" => 274256,
+#..>     "29" => 273030,
+#..>     "3" => 272250,
+#..>     "30" => 275978,
+#..>     "4" => 277054,
+#..>     "5" => 270926,
+#..>     "6" => 272053,
+#..>     "7" => 273112,
+#..>     "8" => 275161,
+#..>     "9" => 274003
+#..>   }
+#..> }
+```
